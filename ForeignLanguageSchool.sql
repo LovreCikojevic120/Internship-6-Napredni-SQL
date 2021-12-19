@@ -105,3 +105,86 @@ INSERT INTO Workbooks(ClassId, CustomerOib, Attendence, MonthlyRate) VALUES
 (3, '7777777777', 100, 50),
 (1, '3000000000', 80, 100),
 (5, '2000000000', 80, 100)
+
+SELECT ClassName, ClassStart, ClassEnd FROM TimeTables
+JOIN Classes ON ClassId = Classes.Id
+WHERE ClassStart BETWEEN '2021-10-1' AND '2021-12-20'
+
+SELECT GroupName, ClassStart, ClassEnd FROM TimeTables
+JOIN Groups ON TimeTables.GroupId = Groups.Id
+WHERE ClassStart BETWEEN '2021-10-1' AND '2021-12-10' AND GroupName = 'Grupa A'
+
+SELECT ClassName, ClassStart, ClassEnd, NameSurname FROM TimeTables
+JOIN Classes ON ClassId = Classes.Id
+JOIN Teachers on TeacherOib = Teachers.Oib
+WHERE ClassStart BETWEEN '2021-12-1' AND '2021-12-30'
+
+SELECT DISTINCT Customers.NameSurname AS Customer, Customers.KnowledgeDegree, Workbooks.Attendence, Workbooks.MonthlyRate, Teachers.NameSurname AS Teacher, Classes.ClassName FROM TimeTables
+JOIN Classes ON ClassId = Classes.Id
+JOIN Teachers ON TeacherOib = Teachers.Oib
+JOIN Workbooks ON Classes.Id = Workbooks.ClassId
+JOIN Customers ON Workbooks.CustomerOib = Customers.Oib
+WHERE ClassStart BETWEEN '2021-10-1' AND '2021-12-30'
+
+SELECT ClassName, COUNT(Groups.CustomerOib) AS Quantity, AVG(Workbooks.Attendence) AS Attendance FROM TimeTables
+JOIN Classes ON ClassId = Classes.Id
+JOIN Groups ON GroupId = Groups.Id
+JOIN Workbooks ON TimeTables.ClassId = Workbooks.ClassId
+WHERE ClassStart BETWEEN '2021-10-1' AND '2021-12-30'
+GROUP BY ClassName
+
+SELECT *, COUNT(AgeGroup) AS Quantity FROM (
+SELECT ClassName,
+CASE
+	WHEN Age <= 17 THEN 'Ucenik'
+	WHEN Age > 17 AND Age <= 27 THEN 'Student'
+	WHEN Age > 27 AND Age <= 66 THEN 'Radnik'
+	WHEN Age > 66 THEN 'Penzioner'
+	ELSE ''
+END AS AgeGroup
+FROM Workbooks
+JOIN Classes ON ClassId = Classes.Id
+JOIN Customers ON CustomerOib = Customers.Oib
+GROUP BY ClassName, Age
+) AS temp
+GROUP BY ClassName, AgeGroup
+
+SELECT NameSurname, MAX(Age) FROM TimeTables
+JOIN Groups ON GroupId = Groups.Id
+JOIN Customers ON CustomerOib = Customers.Oib
+GROUP BY NameSurname
+HAVING COUNT(NameSurname) > 2
+
+SELECT ClassName, Age, COUNT(CustomerOib) AS Quantity FROM Workbooks
+JOIN Classes ON ClassId = Classes.Id
+JOIN Customers ON CustomerOib = Customers.Oib
+GROUP BY ClassName, Age
+HAVING Age < 20
+ORDER BY ClassName
+
+SELECT NameSurname,
+CASE
+	WHEN Age <= 17 THEN 'Ucenik'
+	WHEN Age > 17 AND Age <= 27 THEN 'Student'
+	WHEN Age > 27 AND Age <= 66 THEN 'Radnik'
+	ELSE 'Penzioner'
+END AS AgeGroup
+FROM Customers
+
+SELECT NameSurname, ClassName FROM Workbooks
+JOIN Customers ON CustomerOib = Customers.Oib
+JOIN Classes ON ClassId = Classes.Id
+GROUP BY NameSurname, ClassName
+HAVING ClassName = 'Njemački'
+
+SELECT NameSurname FROM TimeTables
+JOIN Classes ON ClassId = Classes.Id
+JOIN Groups ON GroupId = Groups.Id
+JOIN Customers ON CustomerOib = Customers.Oib
+WHERE ClassroomId = '100'
+
+SELECT Customers.NameSurname, Teachers.NameSurname FROM Workbooks
+JOIN Classes ON ClassId = Classes.Id
+JOIN Customers ON CustomerOib = Customers.Oib
+JOIN Teachers ON TeacherOib = Teachers.Oib
+WHERE ClassName = 'Engleski'
