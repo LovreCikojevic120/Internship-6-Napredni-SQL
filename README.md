@@ -1,1 +1,3 @@
-# Internship-6-Napredni-SQL
+# DUMP Internship Assignment #6
+
+Project covering advanced SQL
